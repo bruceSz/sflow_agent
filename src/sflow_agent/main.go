@@ -4,7 +4,10 @@ package main
 import (
     "fmt"
     "net"
-    //"sflow_agent/sflow"
+    "bytes"
+    "os"
+    "sflow_agent/sflow"
+    "reflect"
 )
 
 func main() {
@@ -19,15 +22,32 @@ func main() {
     }
     defer socket.Close()
 
-    for {
+    //for {
         // read socket
         data := make([]byte, 1024)
-        read, remoteAddr, err := socket.ReadFromUDP(data)
+        //read, remoteAddr, err := socket.ReadFromUDP(data)
+        _, _, err = socket.ReadFromUDP(data)
         if err != nil {
             fmt.Println("Read sflow packet from socket failed!", err)
-            continue
+            //continue
         }
-        fmt.Printf("%x\n\n", data)
-
+    data_reader := bytes.NewReader(data)
+    decoder := sflow.NewDecoder(data_reader)
+    datagram, err := decoder.Decode()
+    if err !=nil {
+        fmt.Println("Decode error, ", err)
+        os.Exit(1)
     }
+
+    val_ptr := reflect.ValueOf(datagram)
+    value := val_ptr.Elem()
+
+    for i:=0; i < value.NumField()-1; i++ {
+        if i != 2 {
+            fmt.Println(value.Field(i).Uint())
+        }
+    }
+        //fmt.Printf("%s\n\n", datagram)
+
+    //}
 }
