@@ -71,18 +71,18 @@ func main() {
         //read, remoteAddr, err := socket.ReadFromUDP(data)
         _, _, err = socket.ReadFromUDP(data)
         if err != nil {
-            infoLog.SetPrefix("Warning")
+            infoLog.SetPrefix("[Warning]")
             infoLog.Println("Read sflow packet from socket failed!", err)
-            infoLog.SetPrefix("Info")
+            infoLog.SetPrefix("[Info]")
             continue
         }
         data_reader := bytes.NewReader(data)
         decoder := sflow.NewDecoder(data_reader)
         datagram, err := decoder.Decode()
         if err !=nil {
-            infoLog.SetPrefix("Warning")
+            infoLog.SetPrefix("[Warning]")
             infoLog.Println("Decode error: ", err)
-            infoLog.SetPrefix("Info")
+            infoLog.SetPrefix("Info]")
             continue
         }
         simple_print(datagram)
