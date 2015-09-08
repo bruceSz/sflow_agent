@@ -102,25 +102,7 @@ func decodeCounterSample(r io.ReadSeeker) (Sample, error) {
             rec, err = decodeEthernetCountersRecord(r, length)
             if err != nil {
                 return nil, err
-            }
-
-        case TypeTokenRingCountersRecord:
-            rec, err = decodeTokenRingCountersRecord(r, length)
-            if err != nil {
-                return nil, err
-            }
-
-        case TypeVgCountersRecord:
-            rec, err = decodeVgCountersRecord(r, length)
-            if err != nil {
-                return nil, err
-            }
-
-        case TypeVlanCountersRecord:
-            rec, err = decodeVlanCountersRecord(r, length)
-            if err != nil {
-                return nil, err
-            }*/
+            }*/ 
 
 
 
