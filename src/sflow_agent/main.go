@@ -44,6 +44,34 @@ func simple_print(datagram *sflow.Datagram){
     }
 }
 
+func postData(datagram *sflow.Datagram){
+    for i:=0; uint32(i) < datagram.NumSamples; i++ {
+    // currently we only care about counter sample
+        sample := datagram.Samples[i].(*sflow.CounterSample)
+        records := sample.GetRecords()
+        for _, record := range records {
+            //fmt.Println(reflect.ValueOf(record))
+            counter_record := record.(sflow.GenericInterfaceCounters)
+            data := map[string] string{
+                "uuid": counter_record.Index,
+                "host": "test",
+                "inDiscard": counter_record.InDiscards,
+                "inError": counter_record.InErrors,
+                "inBps": counter_record.InOctets,
+                "inPps": counter_record.InUnicastPackets,
+                "outDiscard": counter_record.OutDiscards,
+                "outError": counter_record.OutErrors,
+                "outBps": counter_record.OutOctets,
+                "outPps": counter_record.OutUnicastPackets,   
+            }
+            err := YunhaiPost(data)
+            if err != nil {
+                // TODO
+            }
+        }
+    }
+}
+
 func main() {
     // create list socket
     socket, err := net.ListenUDP("udp4", &net.UDPAddr{
@@ -85,7 +113,8 @@ func main() {
             infoLog.SetPrefix("Info]")
             continue
         }
-        simple_print(datagram)
+        //simple_print(datagram)
+        postData(datagram)
         fmt.Println("=============================")
     }
 }
