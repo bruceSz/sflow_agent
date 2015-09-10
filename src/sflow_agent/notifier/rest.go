@@ -5,7 +5,7 @@ import (
     "fmt"
     "bytes"
     "encoding/json"
-    "errors"
+    "sflow_agent/helper"
 )
 
 func test_req_data() (map[string]string){
@@ -24,7 +24,7 @@ func test_req_data() (map[string]string){
     return data
 }
 
-func YunhaiPost(data map[string]string, log *LogFile) (err error){
+func YunhaiPost(data map[string]string, log *helper.LogFile) (err error){
     client := &http.Client{}
     json_data, err := json.Marshal(data)
     if err != nil {
@@ -46,6 +46,7 @@ func YunhaiPost(data map[string]string, log *LogFile) (err error){
     }
     msg := fmt.Sprintf("Post data: %v ",data)
     log.LogMsg(msg)
+    log.LogMsg(resp.Status)
     //fmt.Println(resp)
     return nil
 }

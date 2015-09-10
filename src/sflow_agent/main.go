@@ -6,12 +6,15 @@ import (
     "net"
     "bytes"
     "os"
-    "log"
+    "strconv"
     "sflow_agent/sflow"
-    "helper"
+    "sflow_agent/helper"
+    "sflow_agent/notifier"
 
     //"reflect"
 )
+
+var HOSTNAME, _ =  os.Hostname()
 
 func simple_print(datagram *sflow.Datagram){
     fmt.Println("Datagram::Sflow version:",datagram.Version)
@@ -45,7 +48,7 @@ func simple_print(datagram *sflow.Datagram){
     }
 }
 
-func postData(datagram *sflow.Datagram, log *LogFile){
+func postData(datagram *sflow.Datagram, log *helper.LogFile){
     for i:=0; uint32(i) < datagram.NumSamples; i++ {
     // currently we only care about counter sample
         sample := datagram.Samples[i].(*sflow.CounterSample)
@@ -54,21 +57,21 @@ func postData(datagram *sflow.Datagram, log *LogFile){
             //fmt.Println(reflect.ValueOf(record))
             counter_record := record.(sflow.GenericInterfaceCounters)
             data := map[string] string{
-                "uuid": counter_record.Index,
-                "host": os.Hostname(),
-                "inDiscard": counter_record.InDiscards,
-                "inError": counter_record.InErrors,
-                "inBps": counter_record.InOctets,
-                "inPps": counter_record.InUnicastPackets,
-                "outDiscard": counter_record.OutDiscards,
-                "outError": counter_record.OutErrors,
-                "outBps": counter_record.OutOctets,
-                "outPps": counter_record.OutUnicastPackets,   
+                "uuid": strconv.FormatUint(uint64(counter_record.Index),10),
+                "host": HOSTNAME,
+                "inDiscard": strconv.FormatUint(uint64(counter_record.InDiscards), 10),
+                "inError": strconv.FormatUint(uint64(counter_record.InErrors), 10),
+                "inBps": strconv.FormatUint(counter_record.InOctets, 10),
+                "inPps": strconv.FormatUint(uint64(counter_record.InUnicastPackets), 10),
+                "outDiscard": strconv.FormatUint(uint64(counter_record.OutDiscards), 10),
+                "outError": strconv.FormatUint(uint64(counter_record.OutErrors), 10),
+                "outBps": strconv.FormatUint(counter_record.OutOctets, 10),
+                "outPps": strconv.FormatUint(uint64(counter_record.OutUnicastPackets), 10),
             }
-            err := YunhaiPost(data, log)
+            err := notifier.YunhaiPost(data, log)
             if err != nil {
                 msg := fmt.Sprintf("Error posting counter record: %v ", counter_record)
-                log.logErr(msg, err)
+                log.LogErr(msg, err)
             }
 
         }
