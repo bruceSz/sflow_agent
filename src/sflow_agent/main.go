@@ -8,6 +8,7 @@ import (
     "os"
     "log"
     "sflow_agent/sflow"
+    "helper"
 
     //"reflect"
 )
@@ -44,7 +45,7 @@ func simple_print(datagram *sflow.Datagram){
     }
 }
 
-func postData(datagram *sflow.Datagram){
+func postData(datagram *sflow.Datagram, log *LogFile){
     for i:=0; uint32(i) < datagram.NumSamples; i++ {
     // currently we only care about counter sample
         sample := datagram.Samples[i].(*sflow.CounterSample)
@@ -54,7 +55,7 @@ func postData(datagram *sflow.Datagram){
             counter_record := record.(sflow.GenericInterfaceCounters)
             data := map[string] string{
                 "uuid": counter_record.Index,
-                "host": "test",
+                "host": os.Hostname(),
                 "inDiscard": counter_record.InDiscards,
                 "inError": counter_record.InErrors,
                 "inBps": counter_record.InOctets,
@@ -64,10 +65,12 @@ func postData(datagram *sflow.Datagram){
                 "outBps": counter_record.OutOctets,
                 "outPps": counter_record.OutUnicastPackets,   
             }
-            err := YunhaiPost(data)
+            err := YunhaiPost(data, log)
             if err != nil {
-                // TODO
+                msg := fmt.Sprintf("Error posting counter record: %v ", counter_record)
+                log.logErr(msg, err)
             }
+
         }
     }
 }
@@ -82,39 +85,27 @@ func main() {
         fmt.Println("ListenUDP failed!", err)
         return
     }
-    fileName := "try_log.log"
-    logFile, err := os.Create(fileName)
-    defer logFile.Close()
-    if err != nil {
-        log.Fatalln("open log file error")
-    }
-    infoLog := log.New(logFile,"[Info]",log.Llongfile)
-    defer logFile.Close()
+    log := helper.NewLogFile()
+    log.BeginLogFile("sflow_agent")
+    defer log.EndLogFile()
     defer socket.Close()
 
+    // main loop
     for {
-        fmt.Println("=============================")
-        // read socket
         data := make([]byte, 1024)
         //read, remoteAddr, err := socket.ReadFromUDP(data)
         _, _, err = socket.ReadFromUDP(data)
         if err != nil {
-            infoLog.SetPrefix("[Warning]")
-            infoLog.Println("Read sflow packet from socket failed!", err)
-            infoLog.SetPrefix("[Info]")
+            log.LogErr("Error reading UDP packet", err)
             continue
         }
         data_reader := bytes.NewReader(data)
         decoder := sflow.NewDecoder(data_reader)
         datagram, err := decoder.Decode()
         if err !=nil {
-            infoLog.SetPrefix("[Warning]")
-            infoLog.Println("Decode error: ", err)
-            infoLog.SetPrefix("Info]")
+            log.LogErr("Error decoding UDP packet", err)
             continue
         }
-        //simple_print(datagram)
-        postData(datagram)
-        fmt.Println("=============================")
+        postData(datagram, log)
     }
 }

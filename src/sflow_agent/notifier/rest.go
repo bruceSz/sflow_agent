@@ -24,7 +24,7 @@ func test_req_data() (map[string]string){
     return data
 }
 
-func YunhaiPost(data map[string]string) (err error){
+func YunhaiPost(data map[string]string, log *LogFile) (err error){
     client := &http.Client{}
     json_data, err := json.Marshal(data)
     if err != nil {
@@ -39,9 +39,13 @@ func YunhaiPost(data map[string]string) (err error){
 
     resp, err := client.Do(req)
     if err != nil {
+        msg := fmt.Sprintf("error when posting data: %v ",data)
+        log.LogErr(msg, err)
         fmt.Printf("Error: %s", err)
         return err
     }
+    msg := fmt.Sprintf("Post data: %v ",data)
+    log.LogMsg(msg)
     //fmt.Println(resp)
     return nil
 }
