@@ -15,6 +15,7 @@ import (
 )
 
 var HOSTNAME, _ =  os.Hostname()
+var IFIndexTOUuid = make(map[string]string)
 
 func simple_print(datagram *sflow.Datagram){
     fmt.Println("Datagram::Sflow version:",datagram.Version)
@@ -46,6 +47,11 @@ func simple_print(datagram *sflow.Datagram){
             fmt.Println("OutErrors:",counter_record.OutErrors)
         }
     }
+}
+
+func getUuidByIfindex(ifIndex string) string {
+    val, exist := IFIndexTOUuid[ifIndex]
+    if ! exist
 }
 
 func postData(datagram *sflow.Datagram, log *helper.LogFile){
@@ -93,6 +99,8 @@ func main() {
     defer log.EndLogFile()
     defer socket.Close()
 
+    log.LogMsg("Enter into sflow agent analyze loop.")
+
     // main loop
     for {
         data := make([]byte, 1024)
@@ -111,4 +119,6 @@ func main() {
         }
         postData(datagram, log)
     }
+    log.LogMsg("Exit sflow agent analyze loop.")
+
 }
