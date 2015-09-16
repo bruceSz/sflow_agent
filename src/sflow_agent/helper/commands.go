@@ -22,6 +22,7 @@ func get_qvo_ports() ([]string){
 }
 func get_uuids() ([] string) {
     ps -ef|grep qemu-kvm|grep -e  "-uuid [[:alnum:]]\{8\}-[[:alnum:]]\{4\}-[[:alnum:]]\{4\}-[[:alnum:]]\{4\}-[[:alnum:]]\{12\}" -o
+    ps -ef|grep instance-6c80b29b-071c-4eb6-83c2-ce3ad60224a6|grep -v grep |egrep -e "-uuid [[:alnum:]]+-[[:alnum:]]+-[[:alnum:]]+-[[:alnum:]]+-[[:alnum:]]+" --color  -o
 }
 
 func get_tap_devices() ([] string) {
