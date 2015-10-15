@@ -8,7 +8,7 @@
  
 """
 File: test_PC_gear.py
-Author: baidu(baidu@baidu.com)
+Author: zhangsong06(zhangsong06@baidu.com)
 Date: 2015/10/14 16:24:15
 """
 
