@@ -14,8 +14,10 @@ Date: 2015/10/14 12:06:35
 
 import Queue
 import threading
-
+import thread
+import time
 import logging
+
 
 class PCgear(object):
     """
@@ -82,22 +84,36 @@ class Worker(threading.Thread):
         self.produce = None
         self.consume = None
         self.head = head
+        self.working = False
 
     def init_worker(self, func):
         self.func = func
 
 
     def run(self):
+        """
+
+        """
         if not self.head:
             while True:
-                if not self.consume is None:
-                    item = self.consume()
-                    ret = self.func(item)
-                else:
-                    ret = self.func()
-    
+                # if a worker is head it should not has
+                # consume method, vise versa.
+                # hence the if here sees to be redundant
+                # 
+
+                # if block at consume func, working is False.
+                
+                # TODO: self.working is a critical area. make it
+                # atomic. 
+                item = self.consume()
+                logging.info(' %d: start working' % thread.get_ident())
+                self.working = True
+                ret = self.func(item)
                 if not self.produce is None:
                     self.produce(ret)
+                self.working = False
+                logging.info(' %d: end working' % thread.get_ident())
+
         else:
             if not self.produce is None:
                 for item in self.func():
@@ -148,17 +164,22 @@ class Pipeline(object):
         wait until head  worker is done and no middle worker is in 
         running state.
         """
+        while True:
+            time.sleep(1)
+            if not self.head.isAlive():
+                i = 0
+                for i in range(1,len(self.workers)):
+                    if self.workers[i].isAlive():
 
+                        if self.gears[i-1].queue.empty() and \
+                            not self.workers[i].working:
+                            self.workers[i]._Thread__stop()
+                        break
 
-
-
-
-
-
-
-
-
-
-
-
-
+                # if tail worker is not running anymore.
+                # return .
+                if not self.workers[len(self.workers)-1].isAlive():
+                    break
+            else:
+                # head is still running
+                pass

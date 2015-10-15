@@ -18,6 +18,7 @@ import unittest
 import random
 import logging
 import time
+import signal
 
 
 sys.path.append(
@@ -74,27 +75,72 @@ class PCgearTestCase(unittest.TestCase):
         pipeline.stop()
         print 'serialize execution test end'
 
-    def test_pipeline_fast_slow_execution(self):
+    def _pipeline_fast_slow_execution(self):
         print 'fast_slow execution test begin'
         def func1():
             i = 0
             while i < 5:
-                yield random.randint(1,10)
+                ret = random.randint(1,10)
+                print 'func1',ret
+                yield ret
                 i += 1
                 time.sleep(1)
         
         def func2(i):
             try:
-                print "dfdfd" , i , "fjkdjfdkjfdk   "
+                time.sleep(2)
+                print   '      func2', i*2 
             except Exception as err:
                 print err
 
-        pipeline = utils.Pipeline(0)
+        pipeline = utils.Pipeline(1)
         pipeline.add_worker(func1)
         pipeline.add_worker(func2, tail=True)
         pipeline.start()
         #time.sleep(3)
-        pipeline.stop()
+        pipeline.join()
+        print 'fast_slow execution test end'
+
+    def test_pipeline_slow_fast_execution(self):
+        print 'fast_slow execution test begin'
+        def func1():
+            i = 0
+            while i < 6:
+                ret = random.randint(1,10)
+                print 'func1',ret
+                yield ret
+                i += 1
+                time.sleep(1)
+        
+        def func2(i):
+            try:
+                time.sleep(2)
+                print   '      func2', i*2 
+                return i * 2
+            except Exception as err:
+                print err
+
+        def func3(i):
+            try:
+                #time.sleep(0)
+                print '                func3', i*2
+            except Exception as err:
+                print err
+
+        pipeline = utils.Pipeline(1)
+        pipeline.add_worker(func1)
+        pipeline.add_worker(func2)
+        pipeline.add_worker(func3, tail=True)
+
+        def kill(signum, frame):
+            pipeline.stop()
+
+        signal.signal(signal.SIGINT, kill)
+        pipeline.start()
+        print "gears: %d.. " % len(pipeline.gears)
+        print "workers: %d.. " % len(pipeline.workers)
+        #time.sleep(3)
+        pipeline.join()
         print 'fast_slow execution test end'
 
 
