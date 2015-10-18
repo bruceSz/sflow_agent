@@ -288,7 +288,7 @@ class IfCounters ():
         self.promiscuous_mode = up.unpack_uint()
 
     def __repr__(self):
-        return ('<IfCounters| idx: %d, speed: %s, in_octets: %d, out_octets: %d>' %
+        return ('<IfCounters| idx: %d, speed: %s, in_octets: %d, in_ucasts: %d,  out_octets: %d, out_ucasts: %d>' %
                 (self.index,
                  speed_to_string(self.speed),
                  self.in_octets,
