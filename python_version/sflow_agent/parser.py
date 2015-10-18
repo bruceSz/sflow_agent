@@ -29,7 +29,7 @@ from sys import stdout
 from xdrlib import Unpacker
 from socket import socket, AF_INET, SOCK_DGRAM, ntohl
 from math import floor
-from utils import ip_to_string, hexdump_bytes, mac_to_string, ether_type_to_string, ip_proto_to_string, speed_to_string
+from utils import ip_to_string, mac_to_string, ether_type_to_string, ip_proto_to_string, speed_to_string
 
 
 # Constants for the sample_data member of 'struct sample_record'
@@ -359,18 +359,25 @@ def read_sample_record(up, sample_datagram):
 
     sample_data = up.unpack_opaque()
     up_sample_data = Unpacker(sample_data)
-    
+    ret = None
+
     if sample_type == SAMPLE_DATA_FLOW_RECORD:
-        return read_flow_sample(up_sample_data, sample_datagram)
+        logging.Warning("sample_type: %d is flow type sample, do not \
+            utilize it currently.")
+        pass
+        #return read_flow_sample(up_sample_data, sample_datagram)
     elif sample_type == SAMPLE_DATA_COUNTER_RECORD:
-        return read_counter_sample(up_sample_data, sample_datagram)
+        ret = read_counter_sample(up_sample_data, sample_datagram)
 
     else:
-        raise Exception()
+        logging.warning("sample_type: %d is not supported by current agent.\
+            Contact Zhang Song for further development" % sample_type)
+        #raise Exception()
+        pass
 
     # Check if whole data block was unpacked
     up_sample_data.done()
-
+    return ret
 
 def read_flow_sample(up, datagram):
     sample = FlowSample(datagram)
@@ -397,7 +404,8 @@ def read_flow_record(up, sample):
         res = FlowRecord(sample, read_sampled_ipv4(up_flow_data))
     else:
         res = 'read_flow_record:Unknown data_format (%d)' % flow_format
-
+        logging.warning(res)
+        res = ''
     up_flow_data.done()
     return res
 
@@ -498,9 +506,9 @@ def read_counter_sample(up, datagram):
     nb_counters = up.unpack_uint()
 
     sample = CounterSample(datagram)
-
+    counters = []
     for i in range(nb_counters):
-        yield read_counter_record(up, sample)
+        counters.append(read_counter_record(up, sample))
 
 
 def read_counter_record(up, sample):
@@ -524,7 +532,8 @@ def read_counter_record(up, sample):
     elif counter_format == COUNTER_DATA_VLAN:
         return CounterRecord(sample, read_vlan_counters(up_flow_data))
     else:
-        return 'read_flow_record:Unknown data_format (%d)' % format
+        logging.warning('Unsupported counter record format (%d)' % counter_format)
+        return 'None' 
 
 
 def read_if_counters(up):

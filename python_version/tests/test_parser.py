@@ -19,6 +19,7 @@ import random
 import logging
 import time
 import signal
+from socket import socket, AF_INET, SOCK_DGRAM
 
 
 sys.path.append(
@@ -43,17 +44,21 @@ class PCgearTestCase(unittest.TestCase):
             listen_addr = ("0.0.0.0", 6343)
             sock = socket(AF_INET, SOCK_DGRAM)
             sock.bind(listen_addr)
+            i = 0
             while True:
                 data, addr = sock.recvfrom(65535)
                 sflow_datagram = {}
                 sflow_datagram["addr"] = addr
                 sflow_datagram["data"] = data
                 yield sflow_datagram
+                i += 1
+                if i >= 3:
+                    break
 
         def func3(item):
             for rec in item:
                 print(rec)
-                stdout.flush()
+                #stdout.flush()
         pipeline = utils.Pipeline(1)
         pipeline.add_worker(func1)
         pipeline.add_worker(parser.parse)
