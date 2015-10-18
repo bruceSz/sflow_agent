@@ -292,7 +292,7 @@ class IfCounters ():
                 (self.index,
                  speed_to_string(self.speed),
                  self.in_octets,
-                 self.in_ucasts
+                 self.in_ucasts,
                  self.out_octets,
                  self.out_ucasts
                  ))
