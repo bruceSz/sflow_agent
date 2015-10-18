@@ -29,7 +29,8 @@ from sys import stdout
 from xdrlib import Unpacker
 from socket import socket, AF_INET, SOCK_DGRAM, ntohl
 from math import floor
-from utils import ip_to_string, mac_to_string, ether_type_to_string, ip_proto_to_string, speed_to_string
+from utils import ip_to_string, mathac_to_string, ether_type_to_string, ip_proto_to_string, speed_to_string
+import logging
 
 
 # Constants for the sample_data member of 'struct sample_record'
@@ -362,7 +363,7 @@ def read_sample_record(up, sample_datagram):
     ret = None
 
     if sample_type == SAMPLE_DATA_FLOW_RECORD:
-        logging.Warning("sample_type: %d is flow type sample, do not \
+        logging.warning("sample_type: %d is flow type sample, do not \
             utilize it currently.")
         pass
         #return read_flow_sample(up_sample_data, sample_datagram)
@@ -405,7 +406,7 @@ def read_flow_record(up, sample):
     else:
         res = 'read_flow_record:Unknown data_format (%d)' % flow_format
         logging.warning(res)
-        res = ''
+        res = 'None'
     up_flow_data.done()
     return res
 
