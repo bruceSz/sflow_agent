@@ -29,7 +29,7 @@ from sys import stdout
 from xdrlib import Unpacker
 from socket import socket, AF_INET, SOCK_DGRAM, ntohl
 from math import floor
-from utils import ip_to_string, mathac_to_string, ether_type_to_string, ip_proto_to_string, speed_to_string
+from utils import ip_to_string, ether_type_to_string, ip_proto_to_string, speed_to_string
 import logging
 
 
@@ -338,7 +338,9 @@ def read_datagram(addr, data):
     # Iterating over sample records
     for i in range(nb_sample_records):
         try:
-            records.append(read_sample_record(up, sf))
+            sample_record = read_sample_record(up, sf)
+            if sample_record is not None:
+                records.append(sample_record)
         except EOFError:
             stderr.write("read_sample_datagram: EOFError reading sample_record,", \
                       "Premature end of data stream, Skipping record\n")
@@ -364,21 +366,20 @@ def read_sample_record(up, sample_datagram):
 
     if sample_type == SAMPLE_DATA_FLOW_RECORD:
         logging.warning("sample_type: %d is flow type sample, do not \
-            utilize it currently.")
+            utilize it currently." % sample_type)
         pass
-        #return read_flow_sample(up_sample_data, sample_datagram)
     elif sample_type == SAMPLE_DATA_COUNTER_RECORD:
-        return read_counter_sample(up_sample_data, sample_datagram)
-
+        sample = read_counter_sample(up_sample_data, sample_datagram)
+        if len(sample) is not 0:
+            ret = sample
     else:
         logging.warning("sample_type: %d is not supported by current agent.\
             Contact Zhang Song for further development" % sample_type)
-        #raise Exception()
         pass
 
     # Check if whole data block was unpacked
-    up_sample_data.done()
-    #return ret
+    #up_sample_data.done()
+    return ret
 
 def read_flow_sample(up, datagram):
     sample = FlowSample(datagram)
@@ -509,7 +510,10 @@ def read_counter_sample(up, datagram):
     sample = CounterSample(datagram)
     counters = []
     for i in range(nb_counters):
-        counters.append(read_counter_record(up, sample))
+        counter_record = read_counter_record(up, sample)
+        if counter_record is not None:
+            counters.append(counter_record)
+    return counters
 
 
 def read_counter_record(up, sample):
@@ -534,7 +538,7 @@ def read_counter_record(up, sample):
         return CounterRecord(sample, read_vlan_counters(up_flow_data))
     else:
         logging.warning('Unsupported counter record format (%d)' % counter_format)
-        return 'None' 
+        return None 
 
 
 def read_if_counters(up):
