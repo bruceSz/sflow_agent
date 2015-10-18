@@ -292,7 +292,10 @@ class IfCounters ():
                 (self.index,
                  speed_to_string(self.speed),
                  self.in_octets,
-                 self.out_octets))
+                 self.in_ucasts
+                 self.out_octets,
+                 self.out_ucasts
+                 ))
 
 
 def decode_sflow_data_source(sflow_data_source):
