@@ -368,7 +368,7 @@ def read_sample_record(up, sample_datagram):
         pass
         #return read_flow_sample(up_sample_data, sample_datagram)
     elif sample_type == SAMPLE_DATA_COUNTER_RECORD:
-        ret = read_counter_sample(up_sample_data, sample_datagram)
+        return read_counter_sample(up_sample_data, sample_datagram)
 
     else:
         logging.warning("sample_type: %d is not supported by current agent.\
@@ -378,7 +378,7 @@ def read_sample_record(up, sample_datagram):
 
     # Check if whole data block was unpacked
     up_sample_data.done()
-    return ret
+    #return ret
 
 def read_flow_sample(up, datagram):
     sample = FlowSample(datagram)
