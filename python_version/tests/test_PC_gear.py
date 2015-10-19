@@ -129,7 +129,7 @@ class PCgearTestCase(unittest.TestCase):
 
         pipeline = utils.Pipeline(1)
         pipeline.add_worker(func1)
-        pipeline.add_worker(func2)
+        pipeline.add_worker(func2,workers=2)
         pipeline.add_worker(func3, tail=True)
 
         def kill(signum, frame):

@@ -248,26 +248,34 @@ class Pipeline(object):
         self.head = None
         self.queue_size = queue_size
 
-    def add_worker(self, func, tail=False):
+    def add_worker(self, func, tail=False, workers=1):
         """
         add worker to pipeline
         """
         gear = PCgear(self.queue_size)
+        num = workers
         if self.head is None:
+            assert(num == 1)
             worker = Worker(head=True)
             worker.init_worker(func)
             self.head = worker
             gear.add_producer(worker)
             self.gears.append(gear)
+            self.workers.append(worker)
+
         else:
-            worker = Worker()
-            worker.init_worker(func)
             pre_gear = self.gears[-1]
-            pre_gear.add_consumer(worker)
-            if not tail:
-                gear.add_producer(worker)
-                self.gears.append(gear)
-        self.workers.append(worker)
+
+            while num > 0:
+              worker = Worker()
+              worker.init_worker(func)
+              pre_gear.add_consumer(worker)
+              num -= 1
+              if not tail:
+                  gear.add_producer(worker)
+                  self.gears.append(gear)
+              self.workers.append(worker)
+
 
     def start(self):
         for worker in self.workers:
