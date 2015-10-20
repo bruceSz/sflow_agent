@@ -35,7 +35,7 @@ class PCgearTestCase(unittest.TestCase):
         os.path.dirname(os.path.abspath(__file__))), 'etc/test.conf')
 
     def setUp(self):
-        log.init_log("test_PC_parser.log")
+        pass 
 
     def test_parser(self):
         logging.info("test parser begin.") 
@@ -77,6 +77,7 @@ class PCgearTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    log.init_log("test_parser")
     unittest.main()
 
 

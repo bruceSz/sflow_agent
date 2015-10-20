@@ -33,7 +33,7 @@ class PCgearTestCase(unittest.TestCase):
         os.path.dirname(os.path.abspath(__file__))), 'etc/test.conf')
 
     def setUp(self):
-        log.init_log("test_PC_gear.log")
+        pass
 
     def _serial_execution(self):
 
@@ -145,6 +145,7 @@ class PCgearTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    log.init_log("test_PC_gear")
     unittest.main()
 
 
