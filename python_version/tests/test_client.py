@@ -15,16 +15,14 @@ Date: 2015/10/20 20:43:03
 import sys
 import os
 import unittest
-import logging
-import json
-import random
-import time
-import urllib2
+
 
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sflow_agent import config
+from sflow_agent import log
+from sflow_agent import client
 
 UUID = 'sflow_agent_test'
 
@@ -41,8 +39,8 @@ class SflowTestCase(unittest.TestCase):
 
     def test_post_sflow_entry(self):
         data = {
-           "uuid": "test."+str(self.uuid),
-           "hostname": "test.baidu.com",
+           "uuid": str(self.uuid),
+           "host": "test.baidu.com",
            "in_discard": -1,
            "in_error":-1,
            "in_bps":-1,
@@ -56,5 +54,5 @@ class SflowTestCase(unittest.TestCase):
                           
 
 if __name__ == "__main__":
-    log.init("test_client")
+    log.init_log("test_client")
     unittest.main()

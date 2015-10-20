@@ -39,7 +39,8 @@ def _ifindex_to_tap(ifindex):
     """
     if ifindex in IFINDEX_TO_TAP:
         return IFINDEX_TO_TAP[ifindex]
-    status, output = commands.getstatusoutput("ip link|grep %d|awk -F: '{print $2}'" % ifindex)
+    status, output = commands.getstatusoutput("ip link|grep %d|awk -F: '{print $2}'" 
+                                        % int(ifindex))
     qvo_name = output.strip("\n").strip()
     tap_name = "tap" + qvo_name[3:]
     if not _assert_network_device_exists(tap_name):
@@ -57,7 +58,8 @@ def _tap_to_vm(tap_name):
     vm_list = filter(lambda x:len(x)>0,vm_list)
     for vm in vm_list:
         # assume there is only on tap device inserted in the vm.
-        status,output = commands.getstatusoutput("virsh domiflist %s|awk '/tap/ {print $1}'" % vm)
+        status,output = commands.getstatusoutput("virsh domiflist %s|awk '/tap/ {print $1}'"
+                                                    % vm)
         tmp_tap_name = output.strip()
         TAP_TO_VM[tmp_tap_name] = vm
 
@@ -91,14 +93,4 @@ def ifindex_to_uuid(ifindex):
         return None
     IFINDEX_TO_UUID[ifindex] = uuid
     return IFINDEX_TO_UUID[ifindex]
-
-
-
-
-
-
-
-
-
-
 
