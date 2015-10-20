@@ -8,7 +8,7 @@
  
 """
 File: log.py
-Author: baidu(baidu@baidu.com)
+Author: zhangsong06(zhangsong06@baidu.com)
 Date: 2015/10/14 12:24:11
 """
 
