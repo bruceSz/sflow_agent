@@ -17,11 +17,16 @@ import threading
 import thread
 import time
 import logging
+import socket
 
 from sys import stdout
 from socket import ntohl
 from math import floor, ceil, log
+
+import virt
 #
+
+_HOST = socket.gethostname()
 
 ether_type_description = { 0x0800 : 'IP',
                            0x0806 : 'ARP',
@@ -114,6 +119,21 @@ def ip_proto_to_string(proto):
     else:
         return 'unknown(%d)' % proto
 
+
+def IfCounters_to_sflow_entry(if_counters):
+    data = {}
+    data["uuid"] = virt.ifindex_to_uuid(self.index)
+    data["host"] = _HOST
+    data["in_discard"] = self.in_discards
+    data["in_error"] = self.in_errors
+    data["in_bps"] = self.in_octets
+    data["in_pps"] = self.in_ucasts
+    data["out_discard"] = self.out_discards
+    data["out_error"] = self.out_errors
+    data["out_bps"] = self.out_octets
+    data["out_pps"] = self.out_ucasts
+
+    return data
 
 def speed_to_string(speed):
     speed_name = { 10000000 : '10Mb',

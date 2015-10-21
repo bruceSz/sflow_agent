@@ -56,7 +56,10 @@ def main():
                 break
     def func3(item):
         for rec in item:
-            print(rec)
+            for counter_record in rec:
+                counter_data = counter_record.data
+                sflow_entry = utils.IfCounters_to_sflow_entry(counter_data)
+                print sflow_entry
             #stdout.flush()
     pipeline = utils.Pipeline(1)
     pipeline.add_worker(func1)
