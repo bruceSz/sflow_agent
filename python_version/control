@@ -1,0 +1,34 @@
+#!/bin/bash
+
+
+function start()
+{
+  if [ -f /home/ocean/sflow_agent/var/status ];then
+    cd /home/ocean/sflow_agent/var && rm status
+  fi
+  cd /home/ocean/sflow_agent/python_version &&  /home/bcc/nova/bin/python bin/sflow_agent.py 0</dev/null &>/dev/null & 
+}
+
+function stop()
+{
+  ps -ef|grep sflow_agent|grep -v grep|grep -v bash|awk '{print $2}'|xargs -I{} kill -9 {}
+  
+  if [ -f /home/ocean/sflow_agent/var/status ];then
+    cd /home/ocean/sflow_agent/var && rm status
+  fi
+  
+}
+
+function restart()
+{
+  stop
+  sleep 2
+  start
+}
+
+case ${1:-"other"} in
+  start) start ;;
+  stop) stop ;;
+  restart) restart ;;
+  *) echo "Usage: $0 start|stop|restart" ;;
+esac

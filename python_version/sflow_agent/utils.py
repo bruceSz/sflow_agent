@@ -335,3 +335,16 @@ class Pipeline(object):
             else:
                 # head is still running
                 pass
+
+
+def security_start(conf):
+    fixed_path = conf.default.prog_status_path
+    if os.path.isfile(fixed_path):
+        log.write("info", "Prog already exists, stop spawning.")
+        sys.exit(2)
+
+    dirname = os.path.dirname(os.path.abspath(fixed_path))
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    with open(fixed_path, "w") as f:
+        f.write(str(os.getpid()))
