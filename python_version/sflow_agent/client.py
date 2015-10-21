@@ -52,11 +52,9 @@ class HttpClient(object):
             
             
         except urllib2.HTTPError as err:
-            logging.error(err.code)
             logging.error(err.readlines())
-        except URLError as url_err:
-            logging.error(err.code)
-            logging.error(err.readlines())
+        except urllib2.URLError as url_err:
+            logging.error(url_err.readlines())
         except Exception as err:
             logging.error("Unexpected error: %s" % err)
             return None
