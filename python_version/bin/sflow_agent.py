@@ -54,7 +54,9 @@ def main():
             i += 1
             if i >= 10:
                 break
+
     def func3(item):
+        logging.info("Emit sflow entry begin")
         for rec in item:
             for counter_record in rec:
                 counter_data = counter_record.data
@@ -62,7 +64,8 @@ def main():
                 if sflow_entry is not None:
                     logging.info("Sflow entry added: %s" % sflow_entry)
                     sflow_client.add_sflow_entry(sflow_entry)
-            #stdout.flush()
+        logging.info("Emit sflow entry end.")
+
     pipeline = utils.Pipeline(1)
     pipeline.add_worker(func1)
     pipeline.add_worker(parser.parse)

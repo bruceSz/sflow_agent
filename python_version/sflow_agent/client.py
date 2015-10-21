@@ -16,14 +16,13 @@ Date: 2015/10/19 23:24:18
 #from eventlet.green import urllib2
 import urllib2
 import json
-import log
+import logging
 import time
 
 
 _USER_AGENT = "python-sflow-agent"
 
 
-import logging
 
 class HttpClient(object):
 
@@ -53,11 +52,14 @@ class HttpClient(object):
             
             
         except urllib2.HTTPError as err:
-            log.warning(err.code)
-            log.warning(err.readlines())
-
-            
-            raise err
+            logging.error(err.code)
+            logging.error(err.readlines())
+        except URLError as url_err:
+            logging.error(err.code)
+            logging.error(err.readlines())
+        except Exception as err:
+            logging.error("Unexpected error: %s" % err)
+            return None
             
         res_data = auth_res.read()
 
