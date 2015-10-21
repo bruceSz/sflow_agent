@@ -122,16 +122,16 @@ def ip_proto_to_string(proto):
 
 def IfCounters_to_sflow_entry(if_counters):
     data = {}
-    data["uuid"] = virt.ifindex_to_uuid(self.index)
+    data["uuid"] = virt.ifindex_to_uuid(if_counters.index)
     data["host"] = _HOST
-    data["in_discard"] = self.in_discards
-    data["in_error"] = self.in_errors
-    data["in_bps"] = self.in_octets
-    data["in_pps"] = self.in_ucasts
-    data["out_discard"] = self.out_discards
-    data["out_error"] = self.out_errors
-    data["out_bps"] = self.out_octets
-    data["out_pps"] = self.out_ucasts
+    data["in_discard"] = if_counters.in_discards
+    data["in_error"] = if_counters.in_errors
+    data["in_bps"] = if_counters.in_octets
+    data["in_pps"] = if_counters.in_ucasts
+    data["out_discard"] = if_counters.out_discards
+    data["out_error"] = if_counters.out_errors
+    data["out_bps"] = if_counters.out_octets
+    data["out_pps"] = if_counters.out_ucasts
 
     return data
 
