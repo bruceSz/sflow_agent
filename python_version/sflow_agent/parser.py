@@ -721,7 +721,10 @@ def listenForSFlow(callback, address='0.0.0.0', port=6343):
 
 # used by pipeline
 def parse(sflow_datagram):
-    return read_datagram(sflow_datagram['addr'], sflow_datagram['data'])
+    logging.info("parse datagram begin.")
+    ret = read_datagram(sflow_datagram['addr'], sflow_datagram['data'])
+    logging.info("parse datagram end.")
+    return ret
     #listen_addr = ("0.0.0.0", 6343)
     #sock = socket(AF_INET, SOCK_DGRAM)
     #sock.bind(listen_addr)

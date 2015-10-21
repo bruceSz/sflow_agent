@@ -60,6 +60,7 @@ def main():
                 counter_data = counter_record.data
                 sflow_entry = utils.IfCounters_to_sflow_entry(counter_data)
                 if sflow_entry is not None:
+                    logging.info("Sflow entry added: %s" % sflow_entry)
                     sflow_client.add_sflow_entry(sflow_entry)
             #stdout.flush()
     pipeline = utils.Pipeline(1)
