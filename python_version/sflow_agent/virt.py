@@ -44,6 +44,7 @@ def _ifindex_to_tap(ifindex):
     qvo_name = output.strip("\n").strip()
     tap_name = "tap" + qvo_name[3:]
     if not _assert_network_device_exists(tap_name):
+        IFINDEX_TO_TAP[ifindex] = None
         return None
     IFINDEX_TO_TAP[ifindex] = tap_name
     return tap_name
@@ -66,6 +67,7 @@ def _tap_to_vm(tap_name):
     if tap_name not in TAP_TO_VM:
         logging.warning("Invalid tap device name %s provided, there is no vm with network \
             device named as it is. ")
+        TAP_TO_VM[tap_name] = None
         return None
     return TAP_TO_VM[tap_name]
 
