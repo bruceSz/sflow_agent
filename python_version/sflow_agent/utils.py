@@ -18,6 +18,7 @@ import thread
 import time
 import logging
 import socket
+import os
 
 from sys import stdout
 from socket import ntohl
@@ -335,6 +336,11 @@ class Pipeline(object):
             else:
                 # head is still running
                 pass
+
+
+def remove_status_file(path):
+    if os.path.exists(path):
+        os.remove(path)
 
 
 def security_start(conf):

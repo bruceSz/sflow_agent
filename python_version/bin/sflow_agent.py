@@ -37,7 +37,7 @@ _CONF_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 def main():
     log.init_log("sflow_agent")
     config.init(_CONF_FILE)
-    security_start(config.CONF)
+    utils.security_start(config.CONF)
     sflow_client = client.SflowClient(config.CONF.yunhai)
     logging.info("Sflow agent start.")
         
@@ -77,7 +77,7 @@ def main():
         logging.info("sigterm/sigint received. remove status file and exist")
         prog_status_path = config.CONF.default.prog_status_path
         if os.path.exists(prog_status_path):
-            remove_status_file(prog_status_path)
+            utils.remove_status_file(prog_status_path)
         pipeline.stop()
 
     signal.signal(signal.SIGINT, kill)
