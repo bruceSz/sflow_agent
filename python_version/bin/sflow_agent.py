@@ -59,7 +59,8 @@ def main():
             for counter_record in rec:
                 counter_data = counter_record.data
                 sflow_entry = utils.IfCounters_to_sflow_entry(counter_data)
-                print sflow_entry
+                if sflow_entry is not None:
+                    sflow_client.add_sflow_entry(sflow_entry)
             #stdout.flush()
     pipeline = utils.Pipeline(1)
     pipeline.add_worker(func1)
