@@ -14,14 +14,19 @@ Date: 2015/10/13 21:03:42
 
 import os
 import sys
+import logging
+import signal
+from socket import socket, AF_INET, SOCK_DGRAM
 
-sys.path.append(
+sys.path.insert(0,
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 from sflow_agent import log
 from sflow_agent import client
 from sflow_agent import config
+from sflow_agent import utils
+from sflow_agent import parser
 
 _CONF_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                                 "etc/sflow_agent.conf")
@@ -32,7 +37,7 @@ _CONF_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 def main():
     log.init_log("sflow_agent")
     config.init(_CONF_FILE)
-    sflow_client = client.client.SflowClient(config.CONF.yunhai)
+    sflow_client = client.SflowClient(config.CONF.yunhai)
     logging.info("Sflow agent start.")
         
     def func1():
