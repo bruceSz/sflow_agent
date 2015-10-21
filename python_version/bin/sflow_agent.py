@@ -45,16 +45,12 @@ def main():
         listen_addr = ("0.0.0.0", 6343)
         sock = socket(AF_INET, SOCK_DGRAM)
         sock.bind(listen_addr)
-        i = 0
         while True:
             data, addr = sock.recvfrom(65535)
             sflow_datagram = {}
             sflow_datagram["addr"] = addr
             sflow_datagram["data"] = data
             yield sflow_datagram
-            i += 1
-            if i >= 10:
-                break
 
     def func3(item):
         logging.info("Emit sflow entry begin")
