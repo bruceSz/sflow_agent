@@ -8,7 +8,7 @@
  
 """
 File: pcap.py
-Author: baidu(baidu@baidu.com)
+Author: zhangsong06(zhangsong06@baidu.com)
 Date: 2015/10/22 21:29:50
 """
 
@@ -28,6 +28,25 @@ Date: 2015/10/22 21:29:50
 """
 
 import struct
+import dpkt
+import logging
+
+
+class Pcap(object):
+    def __init__(self, pcap_file):
+        self.f = open(pcap_file)
+        self.pcap = dpkt.pcap.Reader(self.f)
+
+    def parse(self):
+        for ts, buf in self.pcap:
+            try:
+                eth = dpkt.ethernet.Ethernet(buf)
+                ip = eth.data
+                yield eth, ip
+
+            except Exception as err:
+                logging.warning("Error when parsing pcap file. ts: %s, buf: %s. %s"\
+                    % (ts, buf, err))
 
 
 def raw_pcap_parser():
