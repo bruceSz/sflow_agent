@@ -19,7 +19,8 @@ Date: 2015/10/22 21:29:50
         3 extract target info from packet,build flow_summary info ,persist it into analyzer db.
 """
 
-
+import time
+import commands
 import logging
 import pcap
 import socket
@@ -39,31 +40,45 @@ class FlowExtractor(object):
                                                     self.pcap_file_name))
         self.pcap = pcap.Pcap(self.pcap_file_name)
 
+    def _extract_summary_info(self, ip_data):
+        """
+            packet_summary: (src, dst, proto, flags)
+            flags: none for udp
+            proto: tcp; udp
+        """
+        src = socket.inet_ntoa(ip_data.src)
+        dst = socket.inet_ntoa(ip_data.dst)
+
+        if ip_data.data.__class__.__name__ == "TCP":
+            tcp = ip_data.data
+            flags = tcp.flags
+            packet_summary = (src, dst, "TCP", flags)
+
+        elif ip_data.data.__class__.__name__ == "UDP":
+            packet_summary = (src, dst, "UDP", None)
+        else:
+            # ignore other L4 protocol
+            logging.info("Ignore unsupported L4 packet type: %s " % ip_data.data.__class__.__name__)
+            packet_summary = None
+
+        return packet_summary
 
     def extract(self, dev_name):
         """ 
-            Extract proto type info flag info  for each packet.
+            Extract proto type info, flag info  for each packet.
         """
         self._dump_flow(dev_name)
-        ret = []
         for ether_pac in self.pcap.parse():
-            packet_summary = {}
-            if p.data.__class__.__name__ == "IP":
-                ip = eth.data
-                src = socket.inet_ntoa(ip.src)
-                dst = socket.inet_ntoa(ip.dst)
-                packet_summary["src"] = src
-                packet_summary["dst"] = dst
-                if ip.data.__class__.__name__ == "TCP":
-                    tcp = ip.data
-                    # TODO
-            elif p.data.__class__.__name__ == "UDP":
-                # TODO
-                pass
+            if ether_pac.data.__class__.__name__ == "IP":
+                ip = ether_pac.data
+                packet_summary = self._extract_summary_info(ip)
+                if packet_summary is not None:
+                    yield packet_summary
             else:
-                # ignore other protocol
+                # ignore other L3 protocol
+                logging.info("Ignore unsupported L3 packet type: %s " % ether_pac.data.__class__.__name__)
                 pass
-
+        
 
 
 

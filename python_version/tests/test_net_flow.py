@@ -23,7 +23,7 @@ sys.path.append(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sflow_agent import log
-from sflow_agent import pcap
+from sflow_agent import net_flow
 from sflow_agent import config
 
 
@@ -33,24 +33,15 @@ class SflowTestCase(unittest.TestCase):
         os.path.dirname(os.path.abspath(__file__))), 'etc/test.conf')
     def setUp(self):
         conf = config.Conf()
-        conf.init(self.__class__._CONF_FILE)
         self.conf = conf
-        self.pcap_eth_dev_name = self.conf.default.eth_dev
-        self.pcap_packet_num = self.conf.default.packet_num 
-
-        self.pcap_file_name = str(int(time.time())) + "_" + self.pcap_eth_dev_name + ".pcap"
-        status, output = commands.getstatusoutput("sudo tcpdump -i %s -c %s -w %s"\
-                                                  % (self.pcap_eth_dev_name, \
-                                                    self.pcap_packet_num, \
-                                                    self.pcap_file_name))
-        self.pcap_tool = pcap.Pcap(self.pcap_file_name)
+        conf.init(self.__class__._CONF_FILE)
+        self.flow_extractor = net_flow.FlowExtractor(conf.default)
 
     def test_pcap_parse(self):
-        ethernet_packets = self.pcap_tool.parse()
-        for pac in ethernet_packets:
-            print pac.data.data.__class__.__name__
+        for pac_summary in self.flow_extractor.extract(self.conf.default.eth_dev):
+            print pac_summary 
                           
 
 if __name__ == "__main__":
-    log.init_log("test_pcap")
+    log.init_log("test_net_flow")
     unittest.main()

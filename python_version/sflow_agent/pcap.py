@@ -42,7 +42,7 @@ class Pcap(object):
             try:
                 eth = dpkt.ethernet.Ethernet(buf)
                 ip = eth.data
-                yield eth, ip
+                yield eth
 
             except Exception as err:
                 logging.warning("Error when parsing pcap file. ts: %s, buf: %s. %s"\
