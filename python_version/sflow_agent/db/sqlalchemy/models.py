@@ -39,3 +39,14 @@ class AbnormalRecord(Base):
             'end' : self.end.isoformat() if self.end is not None else 'null',
             'stats' : self.stats
         }
+
+class VMNetworkFlowSummary(Base):
+
+    __tablename__ = 'network_flow_summary'
+    # sqlalchemy will set id as
+    nfid = Column(Integer, primary_key=True)
+    uuid = Column(String(36), nullable=True)
+    ctime = Column(TIMESTAMP, nullable=True)
+    summary = Column(Text, nullable=True)
+
+    

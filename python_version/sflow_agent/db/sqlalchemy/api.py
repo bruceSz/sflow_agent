@@ -94,6 +94,17 @@ class SqlalchemyWrapper(object):
         for record in all_record.all():
             self._session.delete(record)
 
+    def network_flow_summary_insert(self, record):
+        self._session.add(record)
+
+    def network_flow_summary_get_by_uuid_ctime(self, uuid, ctime):
+        assert(type(uuid) == type(''))
+        assert(len(uuid) == 36)
+        all_record = self._session.query(models.VMNetworkFlowSummary)\
+                            .filter_by(uuid=uuid)\
+                            .filter_by(ctime=ctime)
+
+
 
 
 

@@ -33,7 +33,7 @@ class SflowTestCase(unittest.TestCase):
         os.path.dirname(os.path.abspath(__file__))), 'etc/test.conf')
     def setUp(self):
         conf = config.Conf()
-        self.conf = conf
+        self.conf = conf  q
         conf.init(self.__class__._CONF_FILE)
         self.flow_extractor = net_flow.FlowExtractor(conf.default)
 
