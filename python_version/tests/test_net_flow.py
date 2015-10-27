@@ -17,6 +17,8 @@ import os
 import unittest
 import commands
 import time
+import random
+import json
 
 
 sys.path.append(
@@ -25,21 +27,30 @@ sys.path.append(
 from sflow_agent import log
 from sflow_agent import net_flow
 from sflow_agent import config
+from sflow_agent.db.sqlalchemy import models
+from sflow_agent.db import api
 
 
 
-class SflowTestCase(unittest.TestCase):
+class NetFlowTestCase(unittest.TestCase):
     _CONF_FILE = os.path.join(os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))), 'etc/test.conf')
     def setUp(self):
-        conf = config.Conf()
-        self.conf = conf  q
-        conf.init(self.__class__._CONF_FILE)
-        self.flow_extractor = net_flow.FlowExtractor(conf.default)
+        config.init(self.__class__._CONF_FILE)
+        self.flow_extractor = net_flow.FlowExtractor(config.CONF.default)
+        self.uuid = random.randint(1, 10)
 
-    def test_pcap_parse(self):
-        for pac_summary in self.flow_extractor.extract(self.conf.default.eth_dev):
-            print pac_summary 
+    def test_flow_summary_persist(self):
+        for pac_summary in self.flow_extractor.extract(config.CONF.default.eth_dev,pcap_keep=False):
+            nfs = models.VMNetworkFlowSummary()
+            nfs.uuid = self.uuid
+            nfs.ctime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())
+            nfs.summary = json.dumps(pac_summary)
+            print nfs
+            api.network_flow_summary_insert(nfs)
+
+
+
                           
 
 if __name__ == "__main__":

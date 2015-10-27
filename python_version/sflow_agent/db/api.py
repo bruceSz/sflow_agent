@@ -61,3 +61,8 @@ def abnormal_record_delete(uuid):
     """Delete abnormal record match uuid"""
     _IMPL.abnormal_record_delete(uuid)
 
+@check_init
+def network_flow_summary_insert(record):
+    """Insert into network flow summary """
+    _IMPL.network_flow_summary_insert(record)
+

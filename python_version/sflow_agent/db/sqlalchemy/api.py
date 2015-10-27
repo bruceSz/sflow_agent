@@ -95,7 +95,11 @@ class SqlalchemyWrapper(object):
             self._session.delete(record)
 
     def network_flow_summary_insert(self, record):
-        self._session.add(record)
+        """ insert into flow summary """
+        try:
+            self._session.add(record)
+        except Exception as err:
+            print err
 
     def network_flow_summary_get_by_uuid_ctime(self, uuid, ctime):
         assert(type(uuid) == type(''))
@@ -103,6 +107,10 @@ class SqlalchemyWrapper(object):
         all_record = self._session.query(models.VMNetworkFlowSummary)\
                             .filter_by(uuid=uuid)\
                             .filter_by(ctime=ctime)
+
+    def network_flow_summary_get_all(self):
+        all_record = self._session.query(models.network_flow_summary)
+        return all_record.all()
 
 
 

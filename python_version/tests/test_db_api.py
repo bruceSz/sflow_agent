@@ -38,7 +38,7 @@ class DBApiTestCase(unittest.TestCase):
         #api.init(self.conf.db)
         config.init(self.__class__._CONF_FILE)
 
-    def test_get_set(self):
+    def test_abnormal_record_get_set(self):
         #TODO
         ar = models.AbnormalRecord()
 

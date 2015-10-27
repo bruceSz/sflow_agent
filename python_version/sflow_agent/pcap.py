@@ -30,11 +30,13 @@ Date: 2015/10/22 21:29:50
 import struct
 import dpkt
 import logging
+import os
 
 
 class Pcap(object):
     def __init__(self, pcap_file):
         self.f = open(pcap_file)
+        self.file_name = pcap_file
         self.pcap = dpkt.pcap.Reader(self.f)
 
     def parse(self):
@@ -47,6 +49,9 @@ class Pcap(object):
             except Exception as err:
                 logging.warning("Error when parsing pcap file. ts: %s, buf: %s. %s"\
                     % (ts, buf, err))
+
+    def delete_pcap_file(self):
+        os.remove(self.file_name)
 
 
 def raw_pcap_parser():

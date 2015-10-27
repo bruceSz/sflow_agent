@@ -63,7 +63,7 @@ class FlowExtractor(object):
 
         return packet_summary
 
-    def extract(self, dev_name):
+    def extract(self, dev_name, pcap_keep=False):
         """ 
             Extract proto type info, flag info  for each packet.
         """
@@ -78,6 +78,9 @@ class FlowExtractor(object):
                 # ignore other L3 protocol
                 logging.info("Ignore unsupported L3 packet type: %s " % ether_pac.data.__class__.__name__)
                 pass
+
+        if not pcap_keep:
+            self.pcap.delete_pcap_file()    
         
 
 
