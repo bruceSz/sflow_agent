@@ -66,3 +66,13 @@ def network_flow_summary_insert(record):
     """Insert into network flow summary """
     _IMPL.network_flow_summary_insert(record)
 
+@check_init
+def network_flow_summary_get_by_uuid_ctime(uuid, ctime):
+    """ Get network flow summary and ctime """
+    return _IMPL.network_flow_summary_get_by_uuid_ctime(uuid, ctime)
+
+@check_init
+def network_flow_summary_get_all():
+    """ Get all network flow summary """
+    return _IMPL.network_flow_summary_get_all()
+

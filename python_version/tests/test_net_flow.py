@@ -38,16 +38,17 @@ class NetFlowTestCase(unittest.TestCase):
     def setUp(self):
         config.init(self.__class__._CONF_FILE)
         self.flow_extractor = net_flow.FlowExtractor(config.CONF.default)
-        self.uuid = random.randint(1, 10)
 
     def test_flow_summary_persist(self):
         for pac_summary in self.flow_extractor.extract(config.CONF.default.eth_dev,pcap_keep=False):
             nfs = models.VMNetworkFlowSummary()
-            nfs.uuid = self.uuid
+            nfs.uuid = ''.join(chr(random.randint(97,122)) for i in range(0,36))
             nfs.ctime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())
             nfs.summary = json.dumps(pac_summary)
-            print nfs
             api.network_flow_summary_insert(nfs)
+            print api.network_flow_summary_get_by_uuid_ctime(nfs.uuid, nfs.ctime)
+
+
 
 
 
