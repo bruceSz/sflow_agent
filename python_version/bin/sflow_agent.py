@@ -74,7 +74,7 @@ def main():
             curr_time = int(time.time())
             last_sflow_entry = sflow_entry_cache[uuid][0]
             last_time = sflow_entry_cache[uuid][1]
-            in_pps_diff = int(sflow_entry["in_pps"] - sflow_entry["in_pps"])
+            in_pps_diff = int(sflow_entry["in_pps"] - last_sflow_entry["in_pps"])
             velocity = int(in_pps_diff / (curr_time - last_time))
             if velocity > int(config.CONF.alarm.pps_threshold):
                 record = models.AbnormalRecord()
